@@ -30,8 +30,9 @@ fn (state GameState) check_if_taken(row int, col int) bool {
 }
 
 fn (state GameState) check_if_won() bool {
-	row := 0
-	for col in 0 .. 3 {
+	mut row := 0
+	mut col := 0
+	for _ in 0 .. 3 {
 		if col == 0 {
 			// check forward
 			if state.board[row][col] != ' ' && state.board[row][col] == state.board[row][col + 1]
@@ -74,6 +75,18 @@ fn (state GameState) check_if_won() bool {
 				return true
 			}
 		}
+		col += 1
+	}
+	row = 1
+	col = 0
+	for _ in 1 .. 3 {
+		// check forward
+		if state.board[row][col] != ' ' && state.board[row][col] == state.board[row][col + 1]
+			&& state.board[row][col + 1] == state.board[row][col + 2] {
+			return true
+		}
+
+		row += 1
 	}
 	return false
 }
@@ -94,6 +107,15 @@ fn input_num_to_row_col(input int) (int, int) {
 	return row, col
 }
 
+fn (state GameState) check_if_tie() bool {
+	for i in 0 .. 3 {
+		if ' ' in state.board[i] {
+			return false
+		}
+	}
+	return true
+}
+
 fn main() {
 	mut board := [][]string{len: 3, init: [' ', ' ', ' ']}
 
@@ -111,7 +133,7 @@ fn main() {
 			continue
 		}
 
-		if num > 9 || num < 0 {
+		if num >= 9 || num < 0 {
 			println('Not a valid number!')
 			continue
 		}
@@ -129,6 +151,12 @@ fn main() {
 			continue
 		}
 
+		if game_state.check_if_tie() {
+			println("It's a tie!")
+			game_state.is_running = false
+			continue
+		}
+
 		println("It is now the bot's turn...")
 
 		mut bot_choice := rand.intn(9)!
@@ -142,6 +170,12 @@ fn main() {
 		game_state.print_board()
 		if game_state.check_if_won() {
 			println('The bot wins! Very sad!')
+			game_state.is_running = false
+			continue
+		}
+
+		if game_state.check_if_tie() {
+			println("It's a tie!")
 			game_state.is_running = false
 			continue
 		}
