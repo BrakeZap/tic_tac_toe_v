@@ -131,9 +131,13 @@ fn main() {
 
 		println("It is now the bot's turn...")
 
-		bot_choice := rand.intn(9)!
+		mut bot_choice := rand.intn(9)!
 
 		row, col = input_num_to_row_col(bot_choice)
+		for game_state.check_if_taken(row, col) {
+			bot_choice = rand.intn(9)!
+			row, col = input_num_to_row_col(bot_choice)
+		}
 		game_state.board[row][col] = 'O'
 		game_state.print_board()
 		if game_state.check_if_won() {
